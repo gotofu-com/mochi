@@ -1,3 +1,5 @@
+version: 2
+
 project_name: mochi
 
 builds:
@@ -20,7 +22,7 @@ archives:
         format: zip
 
 snapshot:
-  name_template: "{{ .Version }}-SNAPSHOT"
+  version_template: "{{ .Version }}-SNAPSHOT"
 
 checksum:
   name_template: "{{ .ProjectName }}-{{ .Version }}-checksums.txt"
