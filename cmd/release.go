@@ -72,17 +72,6 @@ release/<target>/<version>`,
 			return err
 		}
 
-		if baseFlag, _ := cmd.Flags().GetString("base"); baseFlag != "" {
-			if baseVersion, err := version.Parse(baseFlag); err != nil {
-				return err
-			} else {
-				gitBase = domain.Tag{
-					Target:  currentTarget,
-					Version: baseVersion,
-				}.String()
-			}
-		}
-
 		if err := git.EnsureClean(); err != nil {
 			return err
 		}
@@ -95,6 +84,27 @@ release/<target>/<version>`,
 
 		if latestVersion, err = version.Latest(currentTarget); err != nil {
 			slog.Debug("No valid version found in git tags, falling back to the default current version.", "error", err.Error())
+		}
+
+		if baseFlag, _ := cmd.Flags().GetString("base"); baseFlag != "" {
+			if baseFlag == "latest" {
+				if latestVersion == nil {
+					return fmt.Errorf("no valid version found in git tags")
+				}
+				gitBase = domain.Tag{
+					Target:  currentTarget,
+					Version: latestVersion,
+				}.String()
+			} else {
+				if baseVersion, err := version.Parse(baseFlag); err != nil {
+					return err
+				} else {
+					gitBase = domain.Tag{
+						Target:  currentTarget,
+						Version: baseVersion,
+					}.String()
+				}
+			}
 		}
 
 		nextVersion := version.Next(currentTarget, latestVersion)
@@ -196,7 +206,7 @@ var releaseFinishCmd = &cobra.Command{
 }
 
 func init() {
-	releaseStartCmd.Flags().StringP("base", "b", "", "the base version to start the release from (e.g. 2024.1.0)")
+	releaseStartCmd.Flags().StringP("base", "b", "", "the base version to start the release from (e.g. 2024.1.0, latest)")
 
 	releaseFinishCmd.Flags().Bool("rebase", false, "rebase the release branch on top of the base branch instead of merging it")
 
