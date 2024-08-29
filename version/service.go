@@ -18,7 +18,6 @@ package version
 
 import (
 	"fmt"
-	"log/slog"
 	"regexp"
 	"strconv"
 	"time"
@@ -57,7 +56,7 @@ func Parse(version string) (*domain.Version, error) {
 	return &v, nil
 }
 
-func Next(target *domain.Target, baseVersion *domain.Version) *domain.Version {
+func Next(target *domain.Target, latestVersion *domain.Version) *domain.Version {
 	currentYear, currentWeek := time.Now().ISOWeek()
 	nextVersion := &domain.Version{
 		Year:  currentYear,
@@ -65,11 +64,7 @@ func Next(target *domain.Target, baseVersion *domain.Version) *domain.Version {
 		Patch: 0,
 	}
 
-	if baseVersion != nil {
-		nextVersion = baseVersion.Bump()
-	} else if latestVersion, err := Latest(target); err != nil {
-		slog.Debug("No valid version found in git tags, falling back to the default current version.", "error", err.Error())
-	} else if latestVersion.IsSameWeek(nextVersion) {
+	if latestVersion != nil && latestVersion.IsSameWeek(nextVersion) {
 		nextVersion = latestVersion.Bump()
 	}
 

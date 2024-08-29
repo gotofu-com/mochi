@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"gotofu.com/mochi/config"
@@ -62,7 +63,7 @@ release/<target>/<version>`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var (
 			currentTarget *domain.Target
-			baseVersion   *domain.Version
+			latestVersion *domain.Version
 			gitBase       string
 			err           error
 		)
@@ -72,7 +73,7 @@ release/<target>/<version>`,
 		}
 
 		if baseFlag, _ := cmd.Flags().GetString("base"); baseFlag != "" {
-			if baseVersion, err = version.Parse(baseFlag); err != nil {
+			if baseVersion, err := version.Parse(baseFlag); err != nil {
 				return err
 			} else {
 				gitBase = domain.Tag{
@@ -92,7 +93,11 @@ release/<target>/<version>`,
 			return fmt.Errorf("you must be on the base branch to start a release")
 		}
 
-		nextVersion := version.Next(currentTarget, baseVersion)
+		if latestVersion, err = version.Latest(currentTarget); err != nil {
+			slog.Debug("No valid version found in git tags, falling back to the default current version.", "error", err.Error())
+		}
+
+		nextVersion := version.Next(currentTarget, latestVersion)
 
 		if err := git.Checkout(nextVersion.Branch(currentTarget), gitBase); err != nil {
 			return err
@@ -191,7 +196,7 @@ var releaseFinishCmd = &cobra.Command{
 }
 
 func init() {
-	releaseStartCmd.Flags().StringP("base", "b", "", "the base version to start the release from; usefull for hotfixes (e.g. 2024.1.0)")
+	releaseStartCmd.Flags().StringP("base", "b", "", "the base version to start the release from (e.g. 2024.1.0)")
 
 	releaseFinishCmd.Flags().Bool("rebase", false, "rebase the release branch on top of the base branch instead of merging it")
 
