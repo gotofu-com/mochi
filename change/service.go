@@ -44,7 +44,7 @@ type ChangeMeta struct {
 	Type   string
 }
 
-var regex = regexp.MustCompile(`(?s)^---\n(.*?)\n---\n(.*)$`)
+var regex = regexp.MustCompile(`(?s)^---\r?\n(.*?)\r?\n---\r?\n(.*)$`)
 
 func Parse(rawChange string) (*domain.Change, error) {
 	var (
