@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"gotofu.com/mochi/change"
 	"gotofu.com/mochi/change_type"
@@ -102,7 +103,8 @@ var newCmd = &cobra.Command{
 		if branchName, err := git.CurrentBranch(); err != nil {
 			return err
 		} else {
-			re := regexp.MustCompile(`[A-Z]+-\d+`)
+			targetRegex := getTargetRegex(config.Configuration.Targets)
+			re := regexp.MustCompile(targetRegex)
 			match := re.FindString(branchName)
 			if match != "" {
 				ticketUrl := config.Configuration.BaseTicketUrl + match
@@ -152,4 +154,12 @@ var namedItemPromptTemplate = &promptui.SelectTemplates{
 	Active:   fmt.Sprintf("%s {{ .Name | underline }}", promptui.IconSelect),
 	Inactive: "  {{ .Name }}",
 	Selected: fmt.Sprintf(`{{ "%s" | green }} {{ .Name | faint }}`, promptui.IconGood),
+}
+
+func getTargetRegex(targets []domain.Target) string {
+	var targetNames []string
+	for _, target := range targets {
+		targetNames = append(targetNames, target.Name)
+	}
+	return fmt.Sprintf(`(?i)(%s)-\d+`, strings.Join(targetNames, "|"))
 }
