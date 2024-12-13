@@ -29,13 +29,14 @@ target: {{ .Target.Id }}
 type: {{ .Type.Id }}
 ---
 
-{{ .Message }}
+{{ .Message }} - solves {{ .TicketUrl }}
 `)
 
 type Change struct {
-	Type    *ChangeType
-	Target  *Target
-	Message string
+	Type      *ChangeType
+	Target    *Target
+	Message   string
+	TicketUrl *string
 }
 
 func (c Change) Filename() string {

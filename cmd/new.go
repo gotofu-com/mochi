@@ -18,12 +18,14 @@ package cmd
 
 import (
 	"fmt"
+	"regexp"
 
 	"gotofu.com/mochi/change"
 	"gotofu.com/mochi/change_type"
 	"gotofu.com/mochi/config"
 	"gotofu.com/mochi/domain"
 	"gotofu.com/mochi/target"
+	"gotofu.com/mochi/utils/git"
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -94,6 +96,30 @@ var newCmd = &cobra.Command{
 				return err
 			} else {
 				c.Target = &config.Configuration.Targets[index]
+			}
+		}
+
+		if branchName, err := git.CurrentBranch(); err != nil {
+			return err
+		} else {
+			re := regexp.MustCompile(`[A-Z]+-\d+`)
+			match := re.FindString(branchName)
+			if match != "" {
+				ticketUrl := config.Configuration.BaseTicketUrl + match
+				c.TicketUrl = &ticketUrl
+			} else {
+				prompt := promptui.Prompt{
+					Label: "Enter the ticket ID (optional)",
+				}
+
+				if ticketId, err := prompt.Run(); err != nil {
+					return err
+				} else if ticketId != "" {
+					ticketUrl := config.Configuration.BaseTicketUrl + ticketId
+					c.TicketUrl = &ticketUrl
+				} else {
+					c.TicketUrl = nil
+				}
 			}
 		}
 
