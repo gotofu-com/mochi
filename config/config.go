@@ -19,6 +19,8 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"gotofu.com/mochi/domain"
 
@@ -34,8 +36,37 @@ type Config struct {
 
 var Configuration *Config
 
+func findConfigDir(startDir string) (string, error) {
+	currentDir, err := filepath.Abs(startDir)
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		possible := filepath.Join(currentDir, ".mochi", "config.yaml")
+		if _, err := os.Stat(possible); err == nil {
+			return filepath.Join(currentDir, ".mochi"), nil
+		}
+
+		parent := filepath.Dir(currentDir)
+		if parent == currentDir {
+			break
+		}
+		currentDir = parent
+	}
+
+	return "", &viper.ConfigFileNotFoundError{}
+}
+
 func InitConfig() {
-	viper.AddConfigPath("./.mochi")
+	// Try to locate the config directory recursively
+	configDir, err := findConfigDir(".")
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		cobra.CheckErr(err)
+	} else if err == nil {
+		viper.AddConfigPath(configDir)
+	}
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
