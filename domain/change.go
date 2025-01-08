@@ -27,16 +27,17 @@ var changeTemplate, _ = template.New("change").Parse(
 	`---
 target: {{ .Target.Id }}
 type: {{ .Type.Id }}
+ticket: {{ .Target.Name }}-{{ .TicketId }}
 ---
 
-{{ .Message }} - solves {{ .TicketLink }}
+{{ .Message }}
 `)
 
 type Change struct {
-	Type       *ChangeType
-	Target     *Target
-	Message    string
-	TicketLink *string
+	Type     *ChangeType
+	Target   *Target
+	Message  string
+	TicketId *string
 }
 
 func (c Change) Filename() string {

@@ -107,8 +107,7 @@ var newCmd = &cobra.Command{
 			re := regexp.MustCompile(targetRegex)
 			match := re.FindString(branchName)
 			if match != "" {
-				ticketLink := fmt.Sprintf("[%s](%s%s)", branchName, config.Configuration.BaseTicketUrl, match)
-				c.TicketLink = &ticketLink
+				c.TicketId = &match
 			} else {
 				prompt := promptui.Prompt{
 					Label: "Enter the ticket ID (optional)",
@@ -117,10 +116,9 @@ var newCmd = &cobra.Command{
 				if ticketId, err := prompt.Run(); err != nil {
 					return err
 				} else if ticketId != "" {
-					ticketLink := fmt.Sprintf("[%s](%s%s)", branchName, config.Configuration.BaseTicketUrl, ticketId)
-					c.TicketLink = &ticketLink
+					c.TicketId = &ticketId
 				} else {
-					c.TicketLink = nil
+					c.TicketId = nil
 				}
 			}
 		}
