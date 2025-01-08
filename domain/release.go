@@ -41,7 +41,7 @@ var releaseTemplate = template.Must(template.New("release").Parse(`
 {{- range .Notes }}
 ## {{ .Type.Title }}
 {{ range .Changes -}}
-- {{ .Change.Message }} - [{{ .Change.TicketId }}]({{ .BaseTicketUrl }}{{ .Change.TicketId }})
+- {{ .Change.Message }}{{ if .Change.TicketId }} - [{{.Change.Target.Name}}-{{ .Change.TicketId }}]({{ $.BaseTicketUrl }}{{.Change.Target.Name}}-{{ .Change.TicketId }}){{ end }}
 {{ end -}}
 {{ end -}}
 `))

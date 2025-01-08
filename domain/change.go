@@ -27,7 +27,7 @@ var changeTemplate, _ = template.New("change").Parse(
 	`---
 target: {{ .Target.Id }}
 type: {{ .Type.Id }}
-ticket: {{ .Target.Name }}-{{ .TicketId }}
+ticketId: {{ if .TicketId }}{{ .TicketId }}{{ end }}
 ---
 
 {{ .Message }}
