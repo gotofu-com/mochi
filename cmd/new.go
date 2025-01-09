@@ -105,9 +105,9 @@ var newCmd = &cobra.Command{
 		} else {
 			targetRegex := getTargetRegex(config.Configuration.Targets)
 			re := regexp.MustCompile(targetRegex)
-			match := re.FindString(branchName)
-			if match != "" {
-				c.TicketId = &match
+			match := re.FindStringSubmatch(branchName)
+			if len(match) > 1 {
+				c.TicketId = &match[1]
 			} else {
 				prompt := promptui.Prompt{
 					Label: "Enter the ticket ID (optional)",
@@ -159,5 +159,5 @@ func getTargetRegex(targets []domain.Target) string {
 	for _, target := range targets {
 		targetNames = append(targetNames, target.Name)
 	}
-	return fmt.Sprintf(`(?i)(%s)-\d+`, strings.Join(targetNames, "|"))
+	return fmt.Sprintf(`(?i)(?:%s)-(\d+)`, strings.Join(targetNames, "|"))
 }
