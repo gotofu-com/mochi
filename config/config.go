@@ -29,9 +29,10 @@ import (
 )
 
 type Config struct {
-	Types      []domain.ChangeType
-	Targets    []domain.Target
-	BaseBranch string
+	Types         []domain.ChangeType
+	Targets       []domain.Target
+	BaseBranch    string
+	BaseTicketUrl string
 }
 
 var Configuration *Config
@@ -79,6 +80,7 @@ func InitConfig() {
 		{Id: "misc", Name: "Miscellaneous", Title: "Miscellaneous"},
 	})
 	viper.SetDefault("targets", []domain.Target{})
+	viper.SetDefault("baseTicketUrl", "")
 
 	viper.BindEnv("githubToken", "GITHUB_TOKEN")
 

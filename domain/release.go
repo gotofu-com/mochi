@@ -32,15 +32,16 @@ type ReleaseNote struct {
 }
 
 type Release struct {
-	Tag   *Tag
-	Notes []*ReleaseNote
+	Tag           *Tag
+	Notes         []*ReleaseNote
+	BaseTicketUrl *string
 }
 
 var releaseTemplate = template.Must(template.New("release").Parse(`
 {{- range .Notes }}
 ## {{ .Type.Title }}
 {{ range .Changes -}}
-- {{ .Change.Message }}
+- {{ .Change.Message }}{{ if .Change.TicketId }} - [{{.Change.Target.Name}}-{{ .Change.TicketId }}]({{ $.BaseTicketUrl }}{{.Change.Target.Name}}-{{ .Change.TicketId }}){{ end }}
 {{ end -}}
 {{ end -}}
 `))

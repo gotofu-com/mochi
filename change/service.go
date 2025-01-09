@@ -40,8 +40,9 @@ func Commit(c *domain.Change) error {
 }
 
 type ChangeMeta struct {
-	Target string
-	Type   string
+	Target   string  `yaml:"target"`
+	Type     string  `yaml:"type"`
+	TicketId *string `yaml:"ticketId,omitempty"`
 }
 
 var regex = regexp.MustCompile(`(?s)^---\r?\n(.*?)\r?\n---\r?\n(.*)$`)
@@ -62,6 +63,7 @@ func Parse(rawChange string) (*domain.Change, error) {
 		return nil, err
 	}
 
+	c.TicketId = m.TicketId
 	c.Message = strings.TrimSpace(matches[2])
 	if c.Target, err = target.Get(m.Target); err != nil {
 		return nil, err

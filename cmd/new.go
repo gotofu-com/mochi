@@ -18,12 +18,15 @@ package cmd
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 
 	"gotofu.com/mochi/change"
 	"gotofu.com/mochi/change_type"
 	"gotofu.com/mochi/config"
 	"gotofu.com/mochi/domain"
 	"gotofu.com/mochi/target"
+	"gotofu.com/mochi/utils/git"
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -97,6 +100,29 @@ var newCmd = &cobra.Command{
 			}
 		}
 
+		if branchName, err := git.CurrentBranch(); err != nil {
+			return err
+		} else {
+			targetRegex := getTargetRegex(config.Configuration.Targets)
+			re := regexp.MustCompile(targetRegex)
+			match := re.FindString(branchName)
+			if match != "" {
+				c.TicketId = &match
+			} else {
+				prompt := promptui.Prompt{
+					Label: "Enter the ticket ID (optional)",
+				}
+
+				if ticketId, err := prompt.Run(); err != nil {
+					return err
+				} else if ticketId != "" {
+					c.TicketId = &ticketId
+				} else {
+					c.TicketId = nil
+				}
+			}
+		}
+
 		if len(args) > 2 {
 			c.Message = args[2]
 		} else {
@@ -126,4 +152,12 @@ var namedItemPromptTemplate = &promptui.SelectTemplates{
 	Active:   fmt.Sprintf("%s {{ .Name | underline }}", promptui.IconSelect),
 	Inactive: "  {{ .Name }}",
 	Selected: fmt.Sprintf(`{{ "%s" | green }} {{ .Name | faint }}`, promptui.IconGood),
+}
+
+func getTargetRegex(targets []domain.Target) string {
+	var targetNames []string
+	for _, target := range targets {
+		targetNames = append(targetNames, target.Name)
+	}
+	return fmt.Sprintf(`(?i)(%s)-\d+`, strings.Join(targetNames, "|"))
 }
