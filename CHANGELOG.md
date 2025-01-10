@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/gotofu-com/mochi/compare/v0.2.0...v0.2.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* only select the number from the ticketid ([#11](https://github.com/gotofu-com/mochi/issues/11)) ([95da716](https://github.com/gotofu-com/mochi/commit/95da7164554f9de35c4d262e75fa772d88db2910))
+
 ## [0.2.0](https://github.com/gotofu-com/mochi/compare/v0.1.0...v0.2.0) (2025-01-09)
 
 
