@@ -71,6 +71,7 @@ func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
+	viper.SetDefault("configpath", configDir)
 	viper.SetDefault("baseBranch", "main")
 	viper.SetDefault("types", []domain.ChangeType{
 		{Id: "feature", Name: "Feature", Title: "Features"},
