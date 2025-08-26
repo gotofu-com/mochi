@@ -26,7 +26,7 @@ type Tag struct {
 }
 
 func (t Tag) String() string {
-	return fmt.Sprintf("%s@%d.%d.%d", t.Target.Id, t.Version.Year, t.Version.Week, t.Version.Patch)
+	return fmt.Sprintf("%s@%d.%d.%d", t.Target.GetTagPrefix(), t.Version.Year, t.Version.Week, t.Version.Patch)
 }
 
 func (t Tag) Branch() string {

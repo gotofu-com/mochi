@@ -17,6 +17,22 @@ limitations under the License.
 package domain
 
 type Target struct {
-	Name string
-	Id   string
+	Name         string  `yaml:"name"`
+	Id           string  `yaml:"id"`
+	TagPrefix    *string `yaml:"tagPrefix,omitempty"`
+	TicketPrefix *string `yaml:"ticketPrefix,omitempty"`
+}
+
+func (t *Target) GetTagPrefix() string {
+	if t.TagPrefix != nil {
+		return *t.TagPrefix
+	}
+	return t.Id
+}
+
+func (t *Target) GetTicketPrefix() string {
+	if t.TicketPrefix != nil {
+		return *t.TicketPrefix
+	}
+	return t.Name
 }
