@@ -192,8 +192,9 @@ var releaseFinishCmd = &cobra.Command{
 		}
 
 		rel := domain.Release{
-			Tag:   tag,
-			Notes: releaseNotes,
+			Tag:           tag,
+			Notes:         releaseNotes,
+			BaseTicketUrl: &config.Configuration.BaseTicketUrl,
 		}
 		fmt.Printf("Release notes for %s:\n", tag.String())
 		rel.Render(os.Stdout)
