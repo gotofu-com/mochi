@@ -26,11 +26,13 @@ import (
 	"gotofu.com/mochi/domain"
 	"gotofu.com/mochi/target"
 
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
 func Commit(c *domain.Change) error {
-	fileName := fmt.Sprintf(".mochi/%s", c.Filename())
+	configPath := viper.GetString("configpath")
+	fileName := fmt.Sprintf("%s/%s", configPath, c.Filename())
 	file, err := os.Create(fileName)
 	if err != nil {
 		return err
