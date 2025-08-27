@@ -155,9 +155,9 @@ var namedItemPromptTemplate = &promptui.SelectTemplates{
 }
 
 func getTargetRegex(targets []domain.Target) string {
-	var targetNames []string
+	var targetPrefixes []string
 	for _, target := range targets {
-		targetNames = append(targetNames, target.Name)
+		targetPrefixes = append(targetPrefixes, target.GetTicketPrefix())
 	}
-	return fmt.Sprintf(`(?i)(?:%s)-(\d+)`, strings.Join(targetNames, "|"))
+	return fmt.Sprintf(`(?i)(?:%s)-(\d+)`, strings.Join(targetPrefixes, "|"))
 }
