@@ -18,7 +18,6 @@ package domain
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 )
 
@@ -28,9 +27,9 @@ func TestReleaseTemplate_TicketPrefixFormatting(t *testing.T) {
 	ticketId := "123"
 	
 	tests := []struct {
-		name             string
-		release          Release
-		expectedContains []string
+		name           string
+		release        Release
+		expectedOutput string
 	}{
 		{
 			name: "uses custom ticketPrefix in release template",
@@ -64,11 +63,10 @@ func TestReleaseTemplate_TicketPrefixFormatting(t *testing.T) {
 					},
 				},
 			},
-			expectedContains: []string{
-				"[APIPROJ-123]",
-				"(https://jira.example.com/APIPROJ-123)",
-				"Add new authentication endpoint",
-			},
+			expectedOutput: `
+## Features
+- Add new authentication endpoint - [APIPROJ-123](https://jira.example.com/APIPROJ-123)
+`,
 		},
 		{
 			name: "uses Name as ticketPrefix when not set",
@@ -101,11 +99,10 @@ func TestReleaseTemplate_TicketPrefixFormatting(t *testing.T) {
 					},
 				},
 			},
-			expectedContains: []string{
-				"[Frontend App-456]",
-				"(https://github.com/example/repo/issues/Frontend App-456)",
-				"Fix login form validation",
-			},
+			expectedOutput: `
+## Bug Fixes
+- Fix login form validation - [Frontend App-456](https://github.com/example/repo/issues/Frontend App-456)
+`,
 		},
 		{
 			name: "handles change without ticketId",
@@ -139,9 +136,127 @@ func TestReleaseTemplate_TicketPrefixFormatting(t *testing.T) {
 					},
 				},
 			},
-			expectedContains: []string{
-				"Improve database performance",
+			expectedOutput: `
+## Features
+- Improve database performance
+`,
+		},
+		{
+			name: "handles multiple changes in same category",
+			release: Release{
+				BaseTicketUrl: &baseTicketUrl,
+				Notes: []*ReleaseNote{
+					{
+						Type: &ChangeType{
+							Id:    "feature",
+							Name:  "Feature",
+							Title: "Features",
+						},
+						Changes: []*ReleaseChange{
+							{
+								Change: &Change{
+									Type: &ChangeType{
+										Id:    "feature",
+										Name:  "Feature",
+										Title: "Features",
+									},
+									Target: &Target{
+										Name:         "API",
+										Id:           "api",
+										TicketPrefix: &customTicketPrefix,
+									},
+									Message:  "Add user profile endpoint",
+									TicketId: &[]string{"101"}[0],
+								},
+							},
+							{
+								Change: &Change{
+									Type: &ChangeType{
+										Id:    "feature",
+										Name:  "Feature",
+										Title: "Features",
+									},
+									Target: &Target{
+										Name: "API",
+										Id:   "api",
+										TicketPrefix: &customTicketPrefix,
+									},
+									Message:  "Add settings endpoint",
+									TicketId: &[]string{"102"}[0],
+								},
+							},
+						},
+					},
+				},
 			},
+			expectedOutput: `
+## Features
+- Add user profile endpoint - [APIPROJ-101](https://jira.example.com/APIPROJ-101)
+- Add settings endpoint - [APIPROJ-102](https://jira.example.com/APIPROJ-102)
+`,
+		},
+		{
+			name: "handles multiple note categories",
+			release: Release{
+				BaseTicketUrl: &baseTicketUrl,
+				Notes: []*ReleaseNote{
+					{
+						Type: &ChangeType{
+							Id:    "feature",
+							Name:  "Feature",
+							Title: "Features",
+						},
+						Changes: []*ReleaseChange{
+							{
+								Change: &Change{
+									Type: &ChangeType{
+										Id:    "feature",
+										Name:  "Feature",
+										Title: "Features",
+									},
+									Target: &Target{
+										Name: "Backend",
+										Id:   "backend",
+									},
+									Message:  "Add caching layer",
+									TicketId: nil,
+								},
+							},
+						},
+					},
+					{
+						Type: &ChangeType{
+							Id:    "bugfix",
+							Name:  "Bug fix",
+							Title: "Bug Fixes",
+						},
+						Changes: []*ReleaseChange{
+							{
+								Change: &Change{
+									Type: &ChangeType{
+										Id:    "bugfix",
+										Name:  "Bug fix",
+										Title: "Bug Fixes",
+									},
+									Target: &Target{
+										Name: "Backend",
+										Id:   "backend",
+									},
+									Message:  "Fix memory leak",
+									TicketId: &[]string{"999"}[0],
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedOutput: `
+## Features
+- Add caching layer
+
+## Bug Fixes
+- Fix memory leak - [Backend-999](https://jira.example.com/Backend-999)
+`,
 		},
 	}
 
@@ -154,10 +269,8 @@ func TestReleaseTemplate_TicketPrefixFormatting(t *testing.T) {
 			}
 
 			result := buf.String()
-			for _, expected := range tt.expectedContains {
-				if !strings.Contains(result, expected) {
-					t.Errorf("Expected release output to contain %q, but it didn't.\nFull output:\n%s", expected, result)
-				}
+			if result != tt.expectedOutput {
+				t.Errorf("Release output mismatch.\nExpected:\n%q\n\nGot:\n%q", tt.expectedOutput, result)
 			}
 		})
 	}
