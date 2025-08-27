@@ -1,6 +1,11 @@
 name: CI
 
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
   push:
     branches:
       - main
@@ -10,7 +15,29 @@ permissions:
   pull-requests: write
 
 jobs:
+  lint-pr:
+    if: ${{ github.event_name == 'pull_request' }}
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+      - name: Run tests
+        run: go test -v -cover ./...
+
   release:
+    if: ${{ github.event_name == 'push' }}
+    needs: test
     name: Release
     runs-on: ubuntu-latest
     outputs:
@@ -25,7 +52,7 @@ jobs:
     needs: release
     if: ${{ needs.release.outputs.release_created }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: actions/setup-go@v5
