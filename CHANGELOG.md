@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/gotofu-com/mochi/compare/v0.2.1...v0.3.0) (2025-08-27)
+
+
+### Features
+
+* allow tagPrefix and ticketPrefix to be set separately ([#21](https://github.com/gotofu-com/mochi/issues/21)) ([9616d60](https://github.com/gotofu-com/mochi/commit/9616d60cc448b12a6f0b6aacd56a142c674f683d))
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-viper/mapstructure/v2 ([#24](https://github.com/gotofu-com/mochi/issues/24)) ([d28cb28](https://github.com/gotofu-com/mochi/commit/d28cb28e8b873061e3a284698deded7c8422d727))
+* **deps:** update module github.com/spf13/cobra to v1.9.1 ([#17](https://github.com/gotofu-com/mochi/issues/17)) ([8c672ff](https://github.com/gotofu-com/mochi/commit/8c672ff3a9aeb3ba8524037171a05829210fdf88))
+* **deps:** update module github.com/spf13/viper to v1.20.1 ([#18](https://github.com/gotofu-com/mochi/issues/18)) ([b5477d1](https://github.com/gotofu-com/mochi/commit/b5477d1eeb25bb95494d8a8e2ed375f29089bc6e))
+* send base ticket url when running finish command ([#16](https://github.com/gotofu-com/mochi/issues/16)) ([0b1aa7d](https://github.com/gotofu-com/mochi/commit/0b1aa7d4c93b0262a4ee4157df5e7ad0aafb0068))
+* We added support for getting the config from any sub folder. ([#13](https://github.com/gotofu-com/mochi/issues/13)) ([2f0c47d](https://github.com/gotofu-com/mochi/commit/2f0c47d6eb9cd261697d0b02bb31afc2b8acddf8))
+
 ## [0.2.1](https://github.com/gotofu-com/mochi/compare/v0.2.0...v0.2.1) (2025-01-10)
 
 
