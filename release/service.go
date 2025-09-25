@@ -26,13 +26,16 @@ import (
 	"gotofu.com/mochi/config"
 	"gotofu.com/mochi/domain"
 	"gotofu.com/mochi/utils/git"
+
+	"github.com/spf13/viper"
 )
 
 func Get(target *domain.Target) []*domain.ReleaseNote {
 	releaseNotes := []*domain.ReleaseNote{}
 	releaseNotesByType := make(map[string][]*domain.ReleaseChange)
 
-	files, _ := filepath.Glob(fmt.Sprintf(".mochi/*-%s-*.md", target.Id))
+	configPath := viper.GetString("configpath")
+	files, _ := filepath.Glob(fmt.Sprintf("%s/*-%s-*.md", configPath, target.Id))
 	slog.Debug("Release notes files found.", "files", files)
 
 	for _, file := range files {
