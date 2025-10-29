@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"gotofu.com/mochi/domain"
@@ -72,12 +73,19 @@ func Next(target *domain.Target, latestVersion *domain.Version) *domain.Version 
 }
 
 func Latest(target *domain.Target) (*domain.Version, error) {
-	latestGitTag, err := git.LatestTagForTarget(target.Id)
+	latestGitTag, err := git.LatestTagForTarget(target.GetTagPrefix())
 	if err != nil {
 		return nil, err
 	}
 
-	latestVersion, err := Parse(string(latestGitTag))
+	// Extract version part after '@' symbol
+	// Tags are in format: target@version (e.g., bpo@2025.44.0)
+	versionStr := latestGitTag
+	if parts := strings.Split(latestGitTag, "@"); len(parts) == 2 {
+		versionStr = parts[1]
+	}
+
+	latestVersion, err := Parse(versionStr)
 	if err != nil {
 		return nil, err
 	}
