@@ -44,7 +44,7 @@ jobs:
       release_created: ${{ steps.release_please.outputs.release_created }}
     steps:
       - id: release_please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
 
   upload-binaries:
     name: Upload binaries
