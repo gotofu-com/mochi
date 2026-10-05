@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.1](https://github.com/gotofu-com/mochi/compare/v0.3.0...v0.3.1) (2026-10-05)
+
+
+### Bug Fixes
+
+* allow release to be ran from any subdirectory ([#28](https://github.com/gotofu-com/mochi/issues/28)) ([cb788ce](https://github.com/gotofu-com/mochi/commit/cb788cef4cc45bfe59f31b8883d001378424e1b8))
+* **deps:** update module github.com/spf13/cobra to v1.10.1 ([#25](https://github.com/gotofu-com/mochi/issues/25)) ([ebcb198](https://github.com/gotofu-com/mochi/commit/ebcb19829f19b5014e67543131b24cd3d6a01acb))
+* use git tag instead of describe ([#30](https://github.com/gotofu-com/mochi/issues/30)) ([82f4ea8](https://github.com/gotofu-com/mochi/commit/82f4ea8c7501d0497221afaa6396af77623052a9))
+
 ## [0.3.0](https://github.com/gotofu-com/mochi/compare/v0.2.1...v0.3.0) (2025-08-27)
 
 
