@@ -62,11 +62,21 @@ func RevisionExists(rev string) bool {
 }
 
 func LatestTagForTarget(target string) (string, error) {
-	latestGitTag, err := execGit("describe", "--tags", fmt.Sprintf(`--match=%s*`, target), "--abbrev=0", "HEAD")
+	// Use git tag -l instead of git describe to find ALL tags, not just those merged to HEAD
+	// This is important because we want to find the latest version even if it hasn't been merged back to main
+	allTags, err := execGit("tag", "-l", fmt.Sprintf(`%s@*`, target), "--sort=-version:refname")
 	if err != nil {
-		return "", fmt.Errorf("could not get latest tag for target %s", target)
+		return "", fmt.Errorf("could not get tags for target %s", target)
 	}
-	return strings.TrimSpace(latestGitTag), nil
+
+	allTags = strings.TrimSpace(allTags)
+	if allTags == "" {
+		return "", fmt.Errorf("no tags found for target %s", target)
+	}
+
+	// Get the first line (most recent tag due to sort order)
+	lines := strings.Split(allTags, "\n")
+	return strings.TrimSpace(lines[0]), nil
 }
 
 func CurrentBranch() (string, error) {
